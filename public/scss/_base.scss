@@ -7,43 +7,6 @@ html, body {
 	overflow: hidden;
 	position: relative;
 }
-.media_wrapper {
-	height: 100%;
-	width: 100%;
-	position: absolute;
-	top: 0;
-	right: 50%;
-	transform: translateX(50%);	
-	video {
-		display: block;
-		//width: 100%;
-		//max-width: 1120px;
-		height: 100%;
-		position: absolute;
-		right: 50%;
-		transform: translateX(50%);		
-	}
-}
-.overlay_wrapper {
-	height: 100%;
-	width: 100%;	
-	background: rgba(0,0,0,0.2);		
-	position: relative;	
-	margin: 0 auto;
-	overflow-y: auto;
-	@media screen and (min-width: 400px) {
-		overflow: hidden;	
-	}
-}
-section {
-	height: 100%;
-	opacity: 1;
-	@media screen and (min-width: 400px) {
-		&:not(.current) {
-			opacity: 0;
-		}
-	}
-}
 #canvas {
 	width: 100%;
 }

@@ -2,16 +2,4 @@
 
 html, body { margin: 0; padding: 0; overflow: hidden; position: relative; }
 
-.media_wrapper { height: 100%; width: 100%; position: absolute; top: 0; right: 50%; -webkit-transform: translateX(50%); -ms-transform: translateX(50%); transform: translateX(50%); }
-
-.media_wrapper video { display: block; height: 100%; position: absolute; right: 50%; -webkit-transform: translateX(50%); -ms-transform: translateX(50%); transform: translateX(50%); }
-
-.overlay_wrapper { height: 100%; width: 100%; background: rgba(0, 0, 0, 0.2); position: relative; margin: 0 auto; overflow-y: auto; }
-
-@media screen and (min-width: 400px) { .overlay_wrapper { overflow: hidden; } }
-
-section { height: 100%; opacity: 1; }
-
-@media screen and (min-width: 400px) { section:not(.current) { opacity: 0; } }
-
 #canvas { width: 100%; }
