@@ -4,11 +4,14 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 		<title>Test</title>		
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<script type="text/javascript" src="https://rawgit.com/stefanpenner/es6-promise/master/dist/lib/es6-promise.js"></script>
+		<!--<script type="text/javascript" src="https://rawgit.com/stefanpenner/es6-promise/master/dist/lib/es6-promise.js"></script>-->
 	    <link href="css/main.css" rel="stylesheet" type="text/css">
 	</head>
 	<body>
 		<canvas id="canvas" height="841" width="1121"></canvas>
+		<div class="seek">
+			<input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/>
+		</div>
 		<div id="flicker" class="sprites" style="display: none;">
 			<img src="flick/sequence001_sprite.jpg" alt="sequence sprite"/>
 			<img src="flick/sequence002_sprite.jpg" alt="sequence sprite"/>

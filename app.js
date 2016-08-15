@@ -5,10 +5,7 @@ const process = require('process');
 const path = require('path');
 const imglib = require('images');
 
-let flick = [];
-
-//let flick = process.argv[2]  || 'test.txt';
-//let sprite = process.argv[3] || '';
+let map = { frames: [] };
 
 function getSequences(sequences) {
 	return new Promise((resolve, reject) => {
@@ -17,6 +14,20 @@ function getSequences(sequences) {
 			resolve(files.filter(file => fs.statSync(path.join(sequences, file)).isDirectory()));
 		})
 	})  
+}
+
+function generateFlick (seq) {
+	let srcSprite = `${seq}_sprite.jpg`;
+	return new Promise((resolve, reject) => {
+		getFilenames(seq) // get all the files in the target directory
+		.then(fileNames => fileNames.filter((f, i) => /.jpg/.test(f))) // get the images of the sequence
+		.then(imageNames => imageNames.sort()) // sort them alpabetically
+		.then(sortedImageNames => sortedImageNames.map(s => imglib(`sequences/${seq}/` + s))) // get an array of image objects from the filenames
+		.then(images => createSprite(images, srcSprite)) // create the sprite		
+		.then(sprite => sprite.save(`flick/${srcSprite}`)) // save the sprite
+		.then(resolve) // then resolve the promise
+		.catch(e => reject(e)) // otherwise reject with caugh error
+	})	
 }
 
 function getFilenames(seq) {
@@ -28,7 +39,7 @@ function getFilenames(seq) {
 	})
 }
 
-function createSprite(images, seq) {
+function createSprite(images, srcSprite) {
 	let w = images[0].width(), 
 		h =	images[0].height(),
 		columns = Math.ceil(10000 / w), // get number of columns
@@ -37,14 +48,10 @@ function createSprite(images, seq) {
 	let sprite = imglib(columns * w, rows * h); // generate the empty sprite
 	let pos = { col: 0, row: 0 }; // remember position in the grid	
 
-	images.forEach(img => {
-		//console.log('row: %s, col: %s', pos.row, pos.col);
-		sprite.draw(img, w * pos.col, h * pos.row); // draw this image to the sprite
+	images.forEach(img => {		
+		map.frames.push({src: srcSprite, x: w * pos.col, y: h * pos.row }); // add this frame to the animation frames object
+		sprite.draw(img, w * pos.col, h * pos.row); // draw this image to the sprite		
 
-		for(var i = 0; i < flick.length; i++ ) {
-			if(flick[i].sprite !== `flick/${seq}_sprite.jpg`) continue;
-			flick[i].frames.push({ x: w * pos.col, y: h * pos.row }) // and push it's coordinates to the flick
-		}
 		if(pos.col + 1 > columns - 1 && pos.row + 1 > rows) { // if the position exceeds the grid
 			throw new Error('Sprite has exceeded maximum dimensions - oops!'); // throw an error
 		}
@@ -61,32 +68,18 @@ function createSprite(images, seq) {
 
 function saveMap() {
 	return new Promise((resolve, reject) => {
-		fs.writeFile('flick/flicker_map.json', JSON.stringify(flick), (err) => { // write the flick to a file
+		fs.writeFile('flick/flicker_map.json', JSON.stringify(map, null), (err) => { // write the flick to a file
 			if (err) return reject(err); // reject the promise on error
 			resolve('Succesfully saved JSON coordinate map'); // otherwise resolve it
 		})
 	})
 }
 
-function generateFlick (seq) {
-	return new Promise((resolve, reject) => {
-		flick.push({ sprite: `flick/${seq}_sprite.jpg`, frames: [] }); // add this sequence to the flick
-		getFilenames(seq) // get all the files in the target directory
-		.then(fileNames => fileNames.filter((f, i) => /.jpg/.test(f))) // get the images of the sequence
-		.then(imageNames => imageNames.sort()) // sort them alpabetically
-		.then(sortedImageNames => sortedImageNames.map(s => imglib(`sequences/${seq}/` + s))) // get an array of image objects from the filenames
-		.then(images => createSprite(images, seq)) // create the sprite		
-		.then(sprite => sprite.save(`flick/${seq}_sprite.jpg`)) // save the sprite
-		.then(resolve) // then resolve the promise
-		.catch(e => reject(e)) // otherwise reject with caugh error
-	})	
-}
-
 // start the process
 
 getSequences('sequences/') // get every sequence
 .then(sequences => Promise.all(sequences.map(generateFlick))) // generate the flick with each sequence
-.then(seq => saveMap(seq)) // save the generated map to file
+.then(saveMap) // save the generated map to file
 .then(success => console.log(success)) // log successs
 .catch(e => console.log(e)) // log any errors if they occur
 

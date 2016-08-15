@@ -10,3 +10,12 @@ html, body {
 #canvas {
 	width: 100%;
 }
+.seek {
+	position: fixed;
+	bottom: 20px;
+	right: 10%;		
+	left: 10%;
+	input {
+		width: 100%;
+	}
+}
