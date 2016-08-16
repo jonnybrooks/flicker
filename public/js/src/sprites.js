@@ -8,20 +8,23 @@ let srcs = Array.prototype.slice.call(document.querySelectorAll('.sprites img'))
 let playing = true; // play state of the animation
 
 function waitOnImages(cb) {
-	let loaded = [];
-	loaded.push = function() {
-		Array.prototype.push.apply(this, arguments);
-		if(this.length >= srcs.length) cb();
+	let loaded = []; // images loaded array
+	loaded.push = function() { // override default push
+		Array.prototype.push.apply(this, arguments); // push elem to array first
+		if(this.length >= srcs.length) cb(loaded); // if all images loaded, call the callback
 	}
 	for(var i = 0; i < srcs.length; i++) {
-		srcs[i].onload = loaded.push('done');
-	}	
+		srcs[i].onload = (function cc (_i){ // cc -> check image complete on load
+			if(srcs[_i].complete) loaded.push(srcs[_i]); // if the image has finished loading, push to loaded
+			else setTimeout(cc.bind(null, _i), 10); // else check again in 10ms
+		})(i);
+	}
 }
 
 function draw(nf) { // nf -> next frame
 	if (nf >= animation.frames.length) { // if the animation is over
 		playing = false; // stop the animation
-		console.log('animation completed'); // print complete
+		console.log('animation completed');
 	} 
 	else {
 		var sprite = document.querySelector(`.sprites img[src="flick/${[animation.frames[nf].src]}"]`); // get sprite
@@ -58,11 +61,12 @@ function throttle(fn, threshhold, scope) {
   };
 }
 
-// register handlers and begin animation
+// register handlers and begin animation process
 
 document.querySelector('.seek input').setAttribute('max', animation.frames.length - 1); // init the length of the seek bar
 document.querySelector('.seek input').addEventListener('input', throttle(seek)); // throttle to 42 -> one frame in ms (approx)
 
-waitOnImages(function(){
+waitOnImages(function(loaded){ // wait on the images to load
+	console.log('done loading');
 	draw(0); // start the animation from the beggining (0th frame)
 });
