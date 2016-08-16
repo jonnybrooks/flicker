@@ -5,34 +5,35 @@ let animation = {"frames":[{"src":"sequence001_sprite.jpg","x":0,"y":0},{"src":"
 let canvas = document.getElementById('canvas'); // get the canvas element
 let ctx = canvas.getContext('2d'); // establish the 2d context
 let srcs = Array.prototype.slice.call(document.querySelectorAll('.sprites img')); // get the array of source sprites
-let playing = true;
+let playing = true; // play state of the animation
 
-function waitForImages(i){ // wait for all source images to finish loading
-	if(i >= srcs.length) return;
-	srcs[i].onload = waitForImages(++i);
+function waitOnImages(cb) {
+	let loaded = [];
+	loaded.push = function() {
+		Array.prototype.push.apply(this, arguments);
+		if(this.length >= srcs.length) cb();
+	}
+	for(var i = 0; i < srcs.length; i++) {
+		srcs[i].onload = loaded.push('done');
+	}	
 }
-
-waitForImages(0); // block draw before loading
-
-document.querySelector('.seek input').setAttribute('max', animation.frames.length - 1);
-document.querySelector('.seek input').addEventListener('input', throttle(function(){
-	playing = false;
-	draw(this.getAttribute('value'));
-}, 42));
 
 function draw(nf) { // nf -> next frame
 	if (nf >= animation.frames.length) { // if the animation is over
+		playing = false; // stop the animation
 		console.log('animation completed'); // print complete
 	} 
 	else {
 		var sprite = document.querySelector(`.sprites img[src="flick/${[animation.frames[nf].src]}"]`); // get sprite
-		ctx.drawImage(sprite, animation.frames[nf].x * -1, animation.frames[nf].y * -1); // draw the nf using the sprite source		
+		ctx.drawImage(sprite, animation.frames[nf].x * -1, animation.frames[nf].y * -1); // draw the nf using the sprite source				
 	}
-	if(playing) setTimeout(requestAnimationFrame.bind(null, draw.bind(null, ++nf)), 1000 / 24); // iterate the draw loop
+	if(playing) setTimeout(requestAnimationFrame.bind(null, draw.bind(null, ++nf)), 1000 / 24); // iterate the draw loop	
 };
 
-draw(0);
-
+function seek() { // on seek
+	playing = false; // pause the animation
+	draw(this.getAttribute('value')); // draw the sought frame
+}
 
 function throttle(fn, threshhold, scope) {
   threshhold || (threshhold = 250);
@@ -56,3 +57,12 @@ function throttle(fn, threshhold, scope) {
     }
   };
 }
+
+// register handlers and begin animation
+
+document.querySelector('.seek input').setAttribute('max', animation.frames.length - 1); // init the length of the seek bar
+document.querySelector('.seek input').addEventListener('input', throttle(seek)); // throttle to 42 -> one frame in ms (approx)
+
+waitOnImages(function(){
+	draw(0); // start the animation from the beggining (0th frame)
+});
