@@ -7,27 +7,17 @@ html, body {
 	overflow: hidden;
 	position: relative;
 }
-#canvas {
-	width: 100%;
-}
-.seek {
-	position: fixed;
-	bottom: 20px;
-	right: 10%;		
-	left: 10%;
-	input {
+#flicker {
+	.canvas {
 		width: 100%;
 	}
-	// Special styling for WebKit/Blink
-	input[type=range]::-webkit-slider-thumb {
-		// padding: 20px;
-	}
-	// All the same stuff for Firefox
-	input[type=range]::-moz-range-thumb {
-		// padding: 20px;
-	}
-	// All the same stuff for IE
-	input[type=range]::-ms-thumb {
-		// padding: 20px;
+	.seek {
+		position: fixed;
+		bottom: 20px;
+		right: 10%;		
+		left: 10%;
+		input {
+			width: 100%;
+		}
 	}
 }

@@ -24,7 +24,7 @@ function generateFlick (seq) {
 		.then(imageNames => imageNames.sort()) // sort them alpabetically
 		.then(sortedImageNames => sortedImageNames.map(s => imglib(`sequences/${seq}/` + s))) // get an array of image objects from the filenames
 		.then(images => createSprite(images, srcSprite)) // create the sprite		
-		.then(sprite => sprite.save(`flick/${srcSprite}`)) // save the sprite
+		.then(sprite => sprite.save(`flicker/${srcSprite}`)) // save the sprite
 		.then(resolve) // then resolve the promise
 		.catch(e => reject(e)) // otherwise reject with caugh error
 	})	
@@ -68,7 +68,7 @@ function createSprite(images, srcSprite) {
 
 function saveMap() {
 	return new Promise((resolve, reject) => {
-		fs.writeFile('flick/flicker_map.json', JSON.stringify(map, null), (err) => { // write the flick to a file
+		fs.writeFile('flicker/flicker_map.json', JSON.stringify(map, null), (err) => { // write the flick to a file
 			if (err) return reject(err); // reject the promise on error
 			resolve('Succesfully saved JSON coordinate map'); // otherwise resolve it
 		})
