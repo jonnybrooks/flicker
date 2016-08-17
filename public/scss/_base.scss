@@ -8,10 +8,13 @@ html, body {
 	position: relative;
 }
 #flicker {
+	margin: 20px;
 	.canvas {
-		width: 100%;
+		width: 50%;
+		display: block;		
+		margin: 0 auto;
 	}
-	.seek {
+	.controls {
 		position: fixed;
 		bottom: 20px;
 		right: 10%;		
