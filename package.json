@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "Generate sprites with coordinate maps for creating beautiful, reversible, mobile-friendly animations with canvas",
   "main": "app.js",
-  "scripts": {},
+  "scripts": {
+    "start": "node app.js"
+  },
   "repository": "jonnybrooks/flicker",
   "keywords": [
     "procedural",
