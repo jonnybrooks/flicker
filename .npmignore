@@ -1,0 +1,6 @@
+.gitignore
+.gitattributes
+node_modules/ 
+public/ 
+sequences/.gitkeep
+flicker/.gitkeep
