@@ -82,25 +82,3 @@ getSequences('sequences/') // get every sequence
 .then(saveMap) // save the generated map to file
 .then(success => console.log(success)) // log successs
 .catch(e => console.log(e)) // log any errors if they occur
-
-/*
-// program for converting sprite packer from txt to json
-
-fs.readFile(map, 'utf-8', (err, data) => {
-	if (err) throw err;
-	let json = {sprite: sprite, coords: []};
-	let coords = data
-		.replace(/\w+ = /gm, '')
-		.replace(/\r|\n/gm, ' ')
-		.replace(/\s{2,}/gm, ' ')
-		.trim()
-		.split(' ');
-	while(coords.length > 0) {
-		json.coords.push({x: coords.shift(), y: coords.shift()});
-	}  
-	fs.writeFile(`${path.parse(map).name}.json`, JSON.stringify(json, null, '\t'), (err) => {
-		if (err) throw err;
-		console.log('Succesfully converted coordinates to JSON');
-	});
-});
-*/
