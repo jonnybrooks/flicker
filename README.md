@@ -1,5 +1,5 @@
 # flicker
-Create beautiful, seekable, mobile-friendly animations with sprites and canvas
+Create beautiful, seekable, mobile-friendly-auto-playable HTML "videos" (faked with sprite animations and canvas)
 
 ## Install
 
@@ -27,7 +27,7 @@ Essentially, my pipeline was as follows:
 
 This step, namely converting your video into an image sequence, is at your discretion. Here are a couple possible methods:
 * Using Photoshop: [How To Convert A Video Into An Image Sequence](https://ihatetomatoes.net/convert-video-image-sequence/)
-* Using online-convert.com: [Online image converter to JPEG](http://image.online-convert.com/convert-to-jpg)
+* Using online-convert.com: [Online image converter to JPEG](http://image.online-convert.com/convert-to-jpg) (it should be noted that when I tried this, the jpegs were in the wrong order and need to be sorted)
 
 ## Useage - Step 1 - Packing the image sequences into sprites
 
@@ -86,26 +86,25 @@ but I'll include a snippet on it's set up here:
 
 <pre>
 
-<html>
-	<head>
-		<meta charset="utf-8">		
-	</head>
-	<body>
-		<div id="flicker">
-			<canvas class="canvas" height="841" width="1121"></canvas>
-			<div class="controls">
-				<input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/>
-			</div>
-			<div class="sprites" style="display: none;">
-				<img class="sprite" src="flicker/sprite1.jpg" alt=" "/>
-				<img class="sprite" src="flicker/sprite2.jpg" alt=" "/>				
-			</div>		
-		</div>				
-		<script type="text/javascript" src="js/flicker.min.js"></script>
-		<script type="text/javascript">
+&lt;html&gt;
+	&lt;head&gt;
+		&lt;meta charset="utf-8"&gt;		
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;div id="flicker"&gt;
+			&lt;canvas class="canvas" height="841" width="1121"&gt;&lt;/canvas&gt;
+			&lt;div class="controls"&gt;
+				&lt;input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/&gt;
+			&lt;/div&gt;
+			&lt;div class="sprites" style="display: none;"&gt;
+				&lt;img class="sprite" src="flicker/sequence1_sprite.jpg" alt=" "/&gt;
+				&lt;img class="sprite" src="flicker/sequence2_sprite.jpg" alt=" "/&gt;
+			&lt;/div&gt;		
+		&lt;/div&gt;				
+		&lt;script type="text/javascript" src="js/flicker.min.js"&gt;&lt;/script&gt;
+		&lt;script type="text/javascript"&gt;
 
-			// copy flicker_map.json into a variable here
-			var map = { frames: [SUPER LONG ARRAY OF FRAMES HERE] } 
+			var map = // copy flicker_map.json into a variable here, like { frames: [SUPER LONG ARRAY] };
 
 			// register the Flicker object
 			var myFlicker = new Flicker({
@@ -125,11 +124,31 @@ but I'll include a snippet on it's set up here:
 				this.play().wait(2).pause().wait(3).reverse(); 
 			});
 
-		</script>
-	</body>
-</html>
+		&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
 
 </pre>
 
 The js setup in the above snippet is (thus far) as complicated as the config gets. I'll be adding features in the future,
 like optional playThrough (pause after each sequence) and showing/hiding the seek controls in the config.
+
+## Notes
+
+It should be noted that this tool is very much in pre-production, and as such it's still pretty limited. Here
+are some of the issues I'll be working on henceforth:
+
+* At the moment, because the sprite packer tries to process all the sequences at once, it falls over if
+the sequences are too long (and they often are - 24 images = 1 second of video after all). This fix is a priority
+and will come soon.
+* In testing the [images package](https://www.npmjs.com/package/images) (which flicker depends on for sprite packing),
+I found that somewhat arbitrarily it falls over when the sprite resolution roughly exceeds 10,000 x 10,000 pixels. Again, I 
+will do some investigating into why this limit exists and see if I can work around it with some crafty image compression 
+(or something similar).
+* At the moment you have to manually separate the huge monolithic image sequences you get from the video export manually - 
+at some point in the future I'm hoping to add custom CLI parameters/JSON config file which let you specify when to cut the sequence 
+into sub-sequences at given points in time (specified in frames or seconds from the beginning of the video).
+
+If you have any questions, or wish to contribute, then don't hesitate to contact me!
+
+Happy coding everyone ♥
