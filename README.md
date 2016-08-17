@@ -86,26 +86,25 @@ but I'll include a snippet on it's set up here:
 
 <pre>
 
-<html>
-	<head>
-		<meta charset="utf-8">		
-	</head>
-	<body>
-		<div id="flicker">
-			<canvas class="canvas" height="841" width="1121"></canvas>
-			<div class="controls">
-				<input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/>
-			</div>
-			<div class="sprites" style="display: none;">
-				<img class="sprite" src="flicker/sprite1.jpg" alt=" "/>
-				<img class="sprite" src="flicker/sprite2.jpg" alt=" "/>				
-			</div>		
-		</div>				
-		<script type="text/javascript" src="js/flicker.min.js"></script>
-		<script type="text/javascript">
+&lt;html&gt;
+	&lt;head&gt;
+		&lt;meta charset="utf-8"&gt;		
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;div id="flicker"&gt;
+			&lt;canvas class="canvas" height="841" width="1121"&gt;&lt;/canvas&gt;
+			&lt;div class="controls"&gt;
+				&lt;input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/&gt;
+			&lt;/div&gt;
+			&lt;div class="sprites" style="display: none;"&gt;
+				&lt;img class="sprite" src="flicker/sequence1_sprite.jpg" alt=" "/&gt;
+				&lt;img class="sprite" src="flicker/sequence2_sprite.jpg" alt=" "/&gt;
+			&lt;/div&gt;		
+		&lt;/div&gt;				
+		&lt;script type="text/javascript" src="js/flicker.min.js"&gt;&lt;/script&gt;
+		&lt;script type="text/javascript"&gt;
 
-			// copy flicker_map.json into a variable here
-			var map = { frames: [SUPER LONG ARRAY OF FRAMES HERE] } 
+			var map = // copy flicker_map.json into a variable here, like { frames: [SUPER LONG ARRAY] };
 
 			// register the Flicker object
 			var myFlicker = new Flicker({
@@ -125,9 +124,9 @@ but I'll include a snippet on it's set up here:
 				this.play().wait(2).pause().wait(3).reverse(); 
 			});
 
-		</script>
-	</body>
-</html>
+		&lt;/script&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
 
 </pre>
 
