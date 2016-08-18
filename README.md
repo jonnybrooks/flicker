@@ -86,90 +86,97 @@ being packed into sprites. After it's finished, your packed sprites and the JSON
 You can find an example by heading to [flicker.jonathan-brooks.co.uk](http://flicker.jonathan-brooks.co.uk) and viewing the page source,
 but I'll include a snippet on it's set up here:
 
+#### Defining a flicker context
+
+Quick note, the canvas `width` and `height` attributes have been set according to the native size of each
+image in the sprite (each image is the same size, as they're all derived from the same video). Make sure
+to do this for your canvas too - then scaling it is as easy changing the width/height in CSS. 
+
+Adcitionally, the following snippet has a `.controls` range slider which act as seek controls
+for the flicker. At a later date I'll document how you can replace these with your own custom implementation using the
+flicker library.
+
 <pre>
 
-&lt;html&gt;
-	&lt;head&gt;
-		&lt;meta charset="utf-8"&gt;		
-	&lt;/head&gt;
-	&lt;body&gt;
-		&lt;div id="flicker1" class="flicker"&gt;
-			&lt;canvas class="canvas" width="560" height="420"&gt;&lt;/canvas&gt;
-			&lt;div class="controls"&gt;
-				&lt;input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/&gt;
-			&lt;/div&gt;
-			&lt;div class="sprites" style="display: none;"&gt;
-				&lt;img class="sprite" src="flicker/sequence001_sprite.jpg" alt=" "/&gt;
-				&lt;img class="sprite" src="flicker/sequence002_sprite.jpg" alt=" "/&gt;
-			&lt;/div&gt;		
-		&lt;/div&gt;				
-		&lt;script type="text/javascript" src="js/flicker.min.js"&gt;&lt;/script&gt;
-		&lt;script type="text/javascript"&gt;
-
-			var map = // copy flicker_map.json into a variable here, like { frames: [SUPER LONG ARRAY] };
-
-			// register the Flicker object
-
-			var myFlicker = new Flicker({
-				animation: map, // specify the frame coordinate map
-				rootPath: 'flicker/', // specify the root path for the sprites (defaults to flicker/)
-				container: document.getElementById('flicker1') // specify the context for the flicker
-			});
-
-			// flicker provides a utility called waitOnImages which waits for the source sprites to load
-			// this is necessary when using high res images, as playing the animation before the images
-			// have loaded results in the canvas drawing a blank image
-
-			myFlicker.utils.waitOnImages(function () {
-				console.log('done loading');
-
-				/*  
-					BACKGROUND LOOP EXAMPLE
-				    play from current frame (defaults to frame 0 (the beginning)), 
-					then register an event handler on flickerEnd to play the flicker
-					from the beginning whenever the flicker finishes
-				*/
-
-				this.play();
-				this.on('flickerEnd', function(direction){
-					console.log('flicker ended whilst playing %s', direction);
-					this.play(0); // play from the beginning
-				});
-
-				/*  
-					ILLUSTRATIVE EXAMPLE
-				    play from current frame, wait for 2 seconds, pause, wait for 3 seconds,
-					reverse from current frame, wait for one second, play from frame 0 (the beginning)
-				*/
-
-				// this.play().wait(2).pause().wait(3).reverse().wait(1).play(0);
-							
-			});
-
-			// naturally, event handlers can also be registered outside the
-			// waitOnImages function, directly on the flicker object
-			// the sequenceChange event is emitted whenever the flicker transitions
-			// from one sequence to another
-			
-			myFlicker.on('sequenceChange', function(seq){
-				console.log('transitioned to sprite sequence: %s', seq);
-				/*  
-					STOP PLAYTHROUGH EXAMPLE
-					pauses between each sequence, requiring manual replaying
-					to continue the flicker (perhaps triggered by a scroll event?)
-				*/
-				
-				// this.pause(); 
-			});	
-
-		&lt;/script&gt;
-	&lt;/body&gt;
-&lt;/html&gt;
+&lt;div id="flicker1" class="flicker"&gt;
+	&lt;canvas class="canvas" width="560" height="420"&gt;&lt;/canvas&gt;
+	&lt;div class="controls"&gt;
+		&lt;input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/&gt;
+	&lt;/div&gt;
+	&lt;div class="sprites" style="display: none;"&gt;
+		&lt;img class="sprite" src="flicker/sequence001_sprite.jpg" alt=" "/&gt;
+		&lt;img class="sprite" src="flicker/sequence002_sprite.jpg" alt=" "/&gt;
+	&lt;/div&gt;		
+&lt;/div&gt;				
+&lt;script type="text/javascript" src="js/flicker.min.js"&gt;&lt;/script&gt;
 
 </pre>
 
-The js setup in the above snippet is (thus far) as complicated as the config gets. I'll be adding features in the future,
-like optional playThrough (pause after each sequence) and showing/hiding the seek controls in the config.
+#### Creating and configuring an instance of the flicker object
+
+The js setup in this snippet is (thus far) as complicated as the config gets. I'll be adding additional features
+in the future, like additional event handlers, and more config options like playThrough (pausing between sequences)
+and show/hide default seek controls
+
+<pre>		
+
+var map = // copy flicker_map.json into a variable here, like { frames: [SUPER LONG ARRAY] };
+
+// register the Flicker object
+
+var myFlicker = new Flicker({
+	animation: map, // specify the frame coordinate map
+	rootPath: 'flicker/', // specify the root path for the sprites (defaults to flicker/)
+	container: document.getElementById('flicker1') // specify the context for the flicker
+});
+
+// flicker provides a utility called waitOnImages which waits for the source sprites to load
+// this is necessary when using high res images, as playing the animation before the images
+// have loaded results in the canvas drawing a blank image
+
+myFlicker.utils.waitOnImages(function () {
+	console.log('done loading');
+
+	/*  
+		BACKGROUND LOOP EXAMPLE
+	    play from current frame (defaults to frame 0 (the beginning)), 
+		then register an event handler on flickerEnd to play the flicker
+		from the beginning whenever the flicker finishes
+	*/
+
+	this.play();
+	this.on('flickerEnd', function(direction){
+		console.log('flicker ended whilst playing %s', direction);
+		this.play(0); // play from the beginning
+	});
+
+	/*  
+		ILLUSTRATIVE EXAMPLE
+	    play from current frame, wait for 2 seconds, pause, wait for 3 seconds,
+		reverse from current frame, wait for one second, play from frame 0 (the beginning)
+	*/
+
+	// this.play().wait(2).pause().wait(3).reverse().wait(1).play(0);
+				
+});
+
+// naturally, event handlers can also be registered outside the
+// waitOnImages function, directly on the flicker object
+// the sequenceChange event is emitted whenever the flicker transitions
+// from one sequence to another
+
+myFlicker.on('sequenceChange', function(seq){
+	console.log('transitioned to sprite sequence: %s', seq);
+	/*  
+		STOP PLAYTHROUGH EXAMPLE
+		pauses between each sequence, requiring manual replaying
+		to continue the flicker (perhaps triggered by a scroll event?)
+	*/
+	
+	// this.pause(); 
+});	
+
+</pre>
 
 ## Notes
 
