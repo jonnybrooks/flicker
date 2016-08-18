@@ -1,7 +1,6 @@
 {
   "name": "flicker",
-  "version": "0.0.0",
-  "description": "Generate sprites with coordinate maps for creating beautiful, reversible, mobile-friendly animations with canvas",
+  "version": "1.0.1",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
@@ -9,11 +8,16 @@
   "repository": "jonnybrooks/flicker",
   "keywords": [
     "procedural",
+    "html",
+    "background",
+    "hero",
+    "video",    
     "sprite",
     "packer",
     "animation",
     "canvas",
-    "js"
+    "js",
+    "library"
   ],
   "author": "Jonny Brooks",
   "license": "MIT",
