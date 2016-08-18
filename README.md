@@ -93,14 +93,14 @@ but I'll include a snippet on it's set up here:
 		&lt;meta charset="utf-8"&gt;		
 	&lt;/head&gt;
 	&lt;body&gt;
-		&lt;div id="flicker"&gt;
-			&lt;canvas class="canvas" height="841" width="1121"&gt;&lt;/canvas&gt;
+		&lt;div id="flicker1" class="flicker"&gt;
+			&lt;canvas class="canvas" width="560" height="420"&gt;&lt;/canvas&gt;
 			&lt;div class="controls"&gt;
 				&lt;input type="range" min="0" max="1" value="0" step="1" oninput="this.setAttribute('value', this.value);"/&gt;
 			&lt;/div&gt;
 			&lt;div class="sprites" style="display: none;"&gt;
-				&lt;img class="sprite" src="flicker/sequence1_sprite.jpg" alt=" "/&gt;
-				&lt;img class="sprite" src="flicker/sequence2_sprite.jpg" alt=" "/&gt;
+				&lt;img class="sprite" src="flicker/sequence001_sprite.jpg" alt=" "/&gt;
+				&lt;img class="sprite" src="flicker/sequence002_sprite.jpg" alt=" "/&gt;
 			&lt;/div&gt;		
 		&lt;/div&gt;				
 		&lt;script type="text/javascript" src="js/flicker.min.js"&gt;&lt;/script&gt;
@@ -122,21 +122,45 @@ but I'll include a snippet on it's set up here:
 
 			myFlicker.utils.waitOnImages(function () {
 				console.log('done loading');
-				// play from current frame, wait for 2 seconds, pause, wait for 3 seconds,
-				// reverse from current frame, wait for one second, play from frame 0 (the beginning)
-				this.play().wait(2).pause().wait(3).reverse().wait(1).play(0);
+
+				/*  
+					BACKGROUND LOOP EXAMPLE
+				    play from current frame (defaults to frame 0 (the beginning)), 
+					then register an event handler on flickerEnd to play the flicker
+					from the beginning whenever the flicker finishes
+				*/
+
+				this.play();
+				this.on('flickerEnd', function(direction){
+					console.log('flicker ended whilst playing %s', direction);
+					this.play(0); // play from the beginning
+				});
+
+				/*  
+					ILLUSTRATIVE EXAMPLE
+				    play from current frame, wait for 2 seconds, pause, wait for 3 seconds,
+					reverse from current frame, wait for one second, play from frame 0 (the beginning)
+				*/
+
+				// this.play().wait(2).pause().wait(3).reverse().wait(1).play(0);
+							
 			});
 
-			// register a handler on the sequenceChange event
+			// naturally, event handlers can also be registered outside the
+			// waitOnImages function, directly on the flicker object
+			// the sequenceChange event is emitted whenever the flicker transitions
+			// from one sequence to another
+			
 			myFlicker.on('sequenceChange', function(seq){
 				console.log('transitioned to sprite sequence: %s', seq);
-				// this.pause(); // &lt;-- would pause the flicker when transitioning between sequences
-			});
-
-			// register a handler on the flickerEnd event
-			myFlicker.on('flickerEnd', function(direction){
-				console.log('flicker ended whilst playing %s', direction);
-			});
+				/*  
+					STOP PLAYTHROUGH EXAMPLE
+					pauses between each sequence, requiring manual replaying
+					to continue the flicker (perhaps triggered by a scroll event?)
+				*/
+				
+				// this.pause(); 
+			});	
 
 		&lt;/script&gt;
 	&lt;/body&gt;
