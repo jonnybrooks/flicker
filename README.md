@@ -107,6 +107,7 @@ but I'll include a snippet on it's set up here:
 			var map = // copy flicker_map.json into a variable here, like { frames: [SUPER LONG ARRAY] };
 
 			// register the Flicker object
+
 			var myFlicker = new Flicker({
 				animation: map, // specify the frame coordinate map
 				rootPath: 'flicker/', // specify the root path for the sprites (defaults to flicker/)
@@ -119,9 +120,16 @@ but I'll include a snippet on it's set up here:
 
 			myFlicker.utils.waitOnImages(function () {
 				console.log('done loading');
-				// play the animation, then wait for 2 seconds, then pause, then wait for another 3 seconds
-				// before playing the animation in reverse (all the way to the beginning)
-				this.play().wait(2).pause().wait(3).reverse(); 
+				// play from current frame, wait for 2 seconds, pause, wait for 3 seconds,
+				// reverse from current frame, wait for one second, play from frame 0
+				this.play().wait(2).pause().wait(3).reverse().wait(1).play(0);
+			});
+
+
+			// register an event on the sequenceChange event
+			myFlicker.on('sequenceChange', function(seq){
+				console.log('transitioned to sprite sequence: %s', seq);
+				// this.pause(); // <-- would pause the flicker when transitioning between sequences
 			});
 
 		&lt;/script&gt;
