@@ -17,12 +17,10 @@ took forever, and I wanted to play/pause/reverse/seek my sprite animations easie
 Essentially, my pipeline was as follows:
 
 <pre>
-
 (create video)     --> video 
 (photoshop export) --> image sequence(s)
 (flicker package)  --> packed sprites &amp; JSON frame coord map
 (flicker.min.js)   --> canvas animation goodness
-
 </pre>
 
 ## Useage - Step 0 - Generating image sequences for packing
@@ -36,18 +34,15 @@ This step, namely converting your video into an image sequence, is at your discr
 After running `npm install flicker`, you should notice the following folders in the package directory:
 
 <pre>
-
 .
 +-- sequences/ (where to put your image sequences)
 +-- flicker/ (where the sequences are exported to packaged sprites and frame coord map)
-
 </pre>
 
 Before running the flicker app, you'll need to move your image sequences into the `sequences/` folder. 
 Each sequence should be stored within it's own folder, resembling the following: 
 
 <pre>
-
 .
 +-- sequences/
 |   +-- sequence1/
@@ -57,7 +52,6 @@ Each sequence should be stored within it's own folder, resembling the following:
 |   |	+-- image1.jpg 
 |   |	+-- image2.jpg 
 +-- flicker/
-
 </pre>
 
 Then run `npm start` from the package directory - this process can take a little while, depending on the amount of images
@@ -65,7 +59,6 @@ being packed into sprites. After it's finished, your packed sprites and the JSON
 (both sequence1 and sequence2 combined) will be inside `flicker/`:
 
 <pre>
-
 .
 +-- sequences/
 |   +-- sequence1/
@@ -78,7 +71,6 @@ being packed into sprites. After it's finished, your packed sprites and the JSON
 |   +-- sequence1_sprite.jpg/
 |   +-- sequence2_sprite.jpg/
 |   +-- flicker_map.json/
-
 </pre>
 
 ## Useage - Step 2 - Using the sprites in your HTML
@@ -92,12 +84,11 @@ Quick note, the canvas `width` and `height` attributes have been set according t
 image in the sprite (each image is the same size, as they're all derived from the same video). Make sure
 to do this for your canvas too - then scaling it is as easy changing the width/height in CSS. 
 
-Adcitionally, the following snippet has a `.controls` range slider which act as seek controls
-for the flicker. At a later date I'll document how you can replace these with your own custom implementation using the
-flicker library.
+Additionally, the following snippet has a `.controls` range slider which acts as a seek control
+for the flicker. At a later date I'll document how you can replace this with your own custom implementation using the
+`Flicker.seek()` function.
 
 <pre>
-
 &lt;div id="flicker1" class="flicker"&gt;
 	&lt;canvas class="canvas" width="560" height="420"&gt;&lt;/canvas&gt;
 	&lt;div class="controls"&gt;
@@ -109,7 +100,6 @@ flicker library.
 	&lt;/div&gt;		
 &lt;/div&gt;				
 &lt;script type="text/javascript" src="js/flicker.min.js"&gt;&lt;/script&gt;
-
 </pre>
 
 #### Creating and configuring an instance of the flicker object
@@ -119,7 +109,6 @@ in the future, like additional event handlers, and more config options like play
 and show/hide default seek controls
 
 <pre>		
-
 var map = // copy flicker_map.json into a variable here, like { frames: [SUPER LONG ARRAY] };
 
 // register the Flicker object
@@ -175,7 +164,6 @@ myFlicker.on('sequenceChange', function(seq){
 	
 	// this.pause(); 
 });	
-
 </pre>
 
 ## Notes
