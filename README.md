@@ -1,5 +1,7 @@
 # flicker
-Create beautiful, seekable, mobile-friendly-auto-playable HTML videos (faked with sprite animations and canvas)
+Create beautiful, seekable, mobile-friendly-auto-playable HTML videos (faked with sprite animations and canvas).
+
+Demo: [flicker.jonathan-brooks.co.uk](http://flicker.jonathan-brooks.co.uk)
 
 ## Install
 
@@ -111,7 +113,7 @@ but I'll include a snippet on it's set up here:
 			var myFlicker = new Flicker({
 				animation: map, // specify the frame coordinate map
 				rootPath: 'flicker/', // specify the root path for the sprites (defaults to flicker/)
-				container: document.getElementById('flicker') // specify the context for the flicker
+				container: document.getElementById('flicker1') // specify the context for the flicker
 			});
 
 			// flicker provides a utility called waitOnImages which waits for the source sprites to load
@@ -121,15 +123,19 @@ but I'll include a snippet on it's set up here:
 			myFlicker.utils.waitOnImages(function () {
 				console.log('done loading');
 				// play from current frame, wait for 2 seconds, pause, wait for 3 seconds,
-				// reverse from current frame, wait for one second, play from frame 0
+				// reverse from current frame, wait for one second, play from frame 0 (the beginning)
 				this.play().wait(2).pause().wait(3).reverse().wait(1).play(0);
 			});
 
-
-			// register an event on the sequenceChange event
+			// register a handler on the sequenceChange event
 			myFlicker.on('sequenceChange', function(seq){
 				console.log('transitioned to sprite sequence: %s', seq);
 				// this.pause(); // &lt;-- would pause the flicker when transitioning between sequences
+			});
+
+			// register a handler on the flickerEnd event
+			myFlicker.on('flickerEnd', function(direction){
+				console.log('flicker ended whilst playing %s', direction);
 			});
 
 		&lt;/script&gt;

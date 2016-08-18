@@ -6,12 +6,12 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 
 	let container = (() => {
 		if(config.container) return config.container;
-		throw new Error('You must specify a container for the Flicker context');
+		throw new err('UnspecifiedFlickerContextError', 'You must specify a container for the Flicker context');
 	})();
 	let srcs = (() => {
 		let arr = Array.prototype.slice.call(container.querySelectorAll('.sprite')); // get the array of source sprites;
 		if(arr.length > 0) return arr;
-		throw new Error('Each Flicker context must contain at least one sprite');
+		throw new err('EmptySpriteFlickerError', 'Each Flicker context must contain at least one sprite');
 	})();
 
 	let canvas = container.querySelector('canvas'); // get the canvas element
@@ -62,26 +62,29 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 	let fc = { // fc -> flicker config
 		animation: (() => {
 			if(config.animation) return config.animation;
-			throw new Error('Animation can\'t be undefined');
+			throw new err('AnimationInitialisationError', 'You must initialise the Flicker with the object generated in flicker_map.json - have you run the Flicker package yet?');
 		})(),
-		rootPath: config.rootPath || 'flicker/',
+		rootPath: config.rootPath || 'flicker/', // root path for sprites
 		//controls: config.controls || true,
 		//playThrough: config.playThrough || true,
-		container: container,
-		paused: false,
-		direction: 'forward',				
-		currentFrame: 0,		
-		currentSprite: srcs[0].getAttribute('src'),
-		play: play,
-		reverse: reverse,
-		pause: pause,
-		wait: wait,
-		seek: seek,
-		utils: utils,
-		on: on,
-		eventHandlers: {'sequenceChange': null},
+		container: container, // flicker cpontext
+		paused: false, // is the flicker paused
+		direction: 'forward', // flicker direction
+		currentFrame: 0, // current frame in the flicker
+		currentSprite: srcs[0].getAttribute('src'), // current sprite sequence
+		play: play, // play from given frame
+		reverse: reverse, // reverse from given frame
+		pause: pause, // pause the flicker
+		wait: wait, // wait for seconds
+		seek: seek, // seek to specific point
+		utils: utils, // utility functions
+		on: on, // add event handler helper
+		eventHandlers: { // flicker event handlers
+			sequenceChange: n => null,
+			flickerEnd: n => null
+		},
 		_advanceRef: null, // timestamp reference to prevent duplicate advancing
-		_delay: 0
+		_delay: 0 // pretty primitive delay implementation
 	};
 	
 
@@ -95,11 +98,11 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 	
 	// advance the flick, either forward or in reverse
 	function advance(nf, localRef) {
-		if(fc.paused || localRef !== fc._advanceRef) return fc;
+		if(fc.paused || localRef !== fc._advanceRef) return fc; // if paused, or this loop has been superceded, return
 		else if (fc.direction === 'forward') {
 			if(nf >= fc.animation.frames.length) { // if the animation is over	
 				fc.paused = true; // stop the animation
-				console.log('animation completed forward');
+				fc.eventHandlers.flickerEnd.call(fc, fc.direction); // emit the flickerEnd event
 			}		
 			else {
 				draw(nf); // draw the next frame
@@ -109,44 +112,42 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 		else if (fc.direction === 'reverse') {
 			if(nf < 0) { // if the animation is over	
 				fc.paused = true; // stop the animation
-				console.log('animation completed reverse');
+				fc.eventHandlers.flickerEnd.call(fc, fc.direction); // emit the flickerEnd event
 			}		
 			else {
 				draw(nf); // draw the next frame
 				nf--; // decrement nf
 			}
 		}		
-		setTimeout(requestAnimationFrame.bind(null, advance.bind(null, nf, localRef)), 1000 / 24); // iterate the draw loop
-		return fc; 
+		setTimeout(requestAnimationFrame.bind(null, advance.bind(null, nf, localRef)), 1000 / 30); // iterate the draw loop
+		return fc;
 	}
 
 	// draw the frame at index nf
 	function draw(nf) {
-		var src = `${fc.rootPath}${fc.animation.frames[nf].src}`
+		var src = `${fc.rootPath}${fc.animation.frames[nf].src}`;
 		var sprite = document.querySelector(`.sprites img[src="${src}"]`); // get sprite
 
-		if(fc.currentSprite !== src && fc.eventHandlers.sequenceChange !== null) {
-			fc.eventHandlers.sequenceChange.call(fc, src); // emit the sequenceChange event if it changes
+		if(fc.currentSprite !== src) { // if the sprite sequence has changed
+			fc.eventHandlers.sequenceChange.call(fc, src); // emit the sequenceChange event
 		}
-
 		fc.currentSprite = src; // set the Flicker's current sprite to sprite
 		fc.currentFrame = nf; // set the Flicker's current frame to nf
 		try {
 			ctx.drawImage(sprite, fc.animation.frames[nf].x * -1, fc.animation.frames[nf].y * -1); // draw the nf using the sprite source
 		}
 		catch(e) {
-			throw new Error(`Failed to draw image at path '${src}'\r\nThis error usually occurs when the animation tries to draw a sprite which is not within this flicker context; try adding this within your flicker context:\r\n\r\n<img class="sprite" src="${src}" alt=" "/>`);
+			throw new err('CanvasDrawError', `Failed to draw image at path '${src}'\r\n. Try adding this within your flicker context:\r\n\r\n<img class="sprite" src="${src}" alt=" "/>`);
 		}
 	}
 
 	// play the flick in the specified direction
-	function play(nf, forward = true) {
+	function play(nf = fc.currentFrame, forward = true) {
 		let localRef = new Date(); // create a timestamp for this function
-		let frame = nf || fc.currentFrame; // next frame is currentframe if not speicifed
 		fc._advanceRef = localRef; // assign localRef to the flicker config		
 		fc.paused = false; // play the flicker
 		fc.direction = forward ? 'forward' : 'reverse'; // set the direction
-		advance(frame, localRef); // advance to the next frame
+		advance(nf, localRef); // advance to the next frame
 		return fc;
 	}
 
@@ -157,7 +158,7 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 
 	// pause the flick
 	function pause() {	
-		fc.paused = true;	
+		fc.paused = true;
 		return fc;
 	}
 
@@ -186,7 +187,7 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 
 	// controls the flick using a range slider
 	function seek() {
-		pause();
+		fc.paused = true;
 		draw(this.getAttribute('value')); // draw the sought frame
 		return fc;
 	}
@@ -194,8 +195,15 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 	// event registration helper
 	function on(event, cb) {
 		if(event in fc.eventHandlers) return fc.eventHandlers[event] = cb; // if the event exists, register the handler
-		throw new Error(`Event handler registration failed: the specified event '${event}' does not exist`);
-	}	
+		throw new err('EventHandlerRegistrationError', `The specified event '${event}' does not exist`);
+	}
+
+	// custom error factory
+	function err(name, message)	 {
+		let e = new Error(message);
+		e.name = name;
+		return e;
+	}
 
 	return fc; // return the flicker config object
 
