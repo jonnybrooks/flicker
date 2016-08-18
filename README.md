@@ -129,7 +129,7 @@ but I'll include a snippet on it's set up here:
 			// register an event on the sequenceChange event
 			myFlicker.on('sequenceChange', function(seq){
 				console.log('transitioned to sprite sequence: %s', seq);
-				// this.pause(); // <-- would pause the flicker when transitioning between sequences
+				// this.pause(); // &lt;-- would pause the flicker when transitioning between sequences
 			});
 
 		&lt;/script&gt;
