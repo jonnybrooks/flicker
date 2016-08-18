@@ -1,5 +1,5 @@
 # flicker
-Create beautiful, seekable, mobile-friendly-auto-playable HTML "videos" (faked with sprite animations and canvas)
+Create beautiful, seekable, mobile-friendly-auto-playable HTML videos (faked with sprite animations and canvas)
 
 ## Install
 
