@@ -15,6 +15,7 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 	})();
 
 	let canvas = container.querySelector('canvas'); // get the canvas element
+	let frameDimensions = { w: canvas.getAttribute('width'), h: canvas.getAttribute('height') }; // get the dimensions of the canvas frame
 	let ctx = canvas.getContext('2d'); // establish the 2d context	
 	let controls = container.querySelector('.controls input'); // get the controls bar
 
@@ -125,7 +126,7 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 
 	// draw the frame at index nf
 	function draw(nf) {
-		var src = `${fc.rootPath}${fc.animation.frames[nf].src}`;
+		var src = `${fc.rootPath}${fc.animation.frames[nf].src}`;		
 		var sprite = document.querySelector(`.sprites img[src="${src}"]`); // get sprite
 
 		if(fc.currentSprite !== src) { // if the sprite sequence has changed
@@ -134,7 +135,11 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 		fc.currentSprite = src; // set the Flicker's current sprite to sprite
 		fc.currentFrame = nf; // set the Flicker's current frame to nf
 		try {
-			ctx.drawImage(sprite, fc.animation.frames[nf].x * -1, fc.animation.frames[nf].y * -1); // draw the nf using the sprite source
+			ctx.drawImage( // draw the nf using the sprite source
+				sprite, fc.animation.frames[nf].x, fc.animation.frames[nf].y, frameDimensions.w, frameDimensions.h,
+				0, 0, frameDimensions.w, frameDimensions.h 
+			); 
+			//ctx.drawImage(sprite, fc.animation.frames[nf].x * -1, fc.animation.frames[nf].y * -1); // draw the nf using the sprite source
 		}
 		catch(e) {
 			throw new err('CanvasDrawError', `Failed to draw image at path '${src}'\r\n. Try adding this within your flicker context:\r\n\r\n<img class="sprite" src="${src}" alt=" "/>`);
