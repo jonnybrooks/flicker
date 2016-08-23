@@ -40,8 +40,8 @@ function getFilenames(seq) {
 function createSprite(images, seq) {
 	let w = images[0].width(), // get the unit width of each image
 		h =	images[0].height(), // get the unit height of each iamge
-		maxCols = Math.ceil(4096 / w), // get max columns per sprite
-		maxRows = Math.ceil(4096 / h), // get max rows per sprite
+		maxCols = Math.ceil(2048 / w), // get max columns per sprite
+		maxRows = Math.ceil(2048 / h), // get max rows per sprite
 		cols = maxCols, // as well as attributes for columns
 		rows = maxRows, // and rows
 		iteration = 0, // and the sequence iteration
@@ -71,7 +71,7 @@ function createSprite(images, seq) {
 		else {
 			pos.col++; // otherwise just move to the next column
 		}
-		if(i !== 0 && (i % ((maxCols * maxRows) - 1) === 0 || i === images.length - 1)) {
+		if((i + 1) % (maxCols * maxRows) === 0 || i === images.length - 1) {
 			console.log(`saving sprite: ${seq}_${iteration}.sprite.jpg`);
 			sprite.save(`flicker/${seq}_${iteration}.sprite.jpg`);
 			iteration++;
@@ -81,7 +81,7 @@ function createSprite(images, seq) {
 
 function saveMap() {
 	return new Promise((resolve, reject) => {
-		fs.writeFile('flicker/flicker_map.json', JSON.stringify(map, null), (err) => { // write the flick to a file
+		fs.writeFile('flicker/flicker_map.json', JSON.stringify(map, null), err => { // write the flick to a file
 			if (err) return reject(err); // reject the promise on error
 			resolve('Succesfully saved JSON coordinate map'); // otherwise resolve it
 		})
