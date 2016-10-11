@@ -70,7 +70,7 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 		//playThrough: config.playThrough || true,
 		container: container, // flicker cpontext
 		paused: false, // is the flicker paused
-		direction: 'forward', // flicker direction
+		direction: 'forwards', // flicker direction
 		currentFrame: 0, // current frame in the flicker
 		currentSprite: srcs[0].getAttribute('src'), // current sprite sequence
 		play: play, // play from given frame
@@ -97,10 +97,10 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 	controls.setAttribute('max', fc.animation.frames.length - 1); // init the length of the controls bar
 	controls.addEventListener('input', utils.throttle(seek)); // throttle seek function to reduce jank
 	
-	// advance the flick, either forward or in reverse
+	// advance the flick, either forwards or in reverse
 	function advance(nf, localRef) {
 		if(fc.paused || localRef !== fc._advanceRef) return fc; // if paused, or this loop has been superceded, return
-		else if (fc.direction === 'forward') {
+		else if (fc.direction === 'forwards') {
 			if(nf >= fc.animation.frames.length) { // if the animation is over	
 				fc.paused = true; // stop the animation
 				fc.eventHandlers.flickerEnd.call(fc, fc.direction); // emit the flickerEnd event
@@ -120,7 +120,7 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 				nf--; // decrement nf
 			}
 		}		
-		setTimeout(requestAnimationFrame.bind(null, advance.bind(null, nf, localRef)), 1000 / 30); // iterate the draw loop
+		setTimeout(requestAnimationFrame.bind(null, advance.bind(null, nf, localRef)), 1000 / 24); // iterate the draw loop
 		return fc;
 	}
 
@@ -147,11 +147,11 @@ let Flicker = function(config = {}){ // attach Flicker to global object
 	}
 
 	// play the flick in the specified direction
-	function play(nf = fc.currentFrame, forward = true) {
+	function play(nf = fc.currentFrame, forwards = true) {
 		let localRef = new Date(); // create a timestamp for this function
 		fc._advanceRef = localRef; // assign localRef to the flicker config		
 		fc.paused = false; // play the flicker
-		fc.direction = forward ? 'forward' : 'reverse'; // set the direction
+		fc.direction = forwards ? 'forwards' : 'reverse'; // set the direction
 		advance(nf, localRef); // advance to the next frame
 		return fc;
 	}
