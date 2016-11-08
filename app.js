@@ -8,6 +8,8 @@ const imglib = require('images');
 let map = { frames: [] };
 let imgHTML = [];
 
+// get the sequences (directories signifying sequences)
+
 function getSequences(sequences) {
 	return new Promise((resolve, reject) => {
 		fs.readdir(sequences, (err, files) => {
@@ -17,6 +19,19 @@ function getSequences(sequences) {
 	})  
 }
 
+// generate all sequences
+
+function generateAll (sequences) {
+	return new Promise((resolve, reject) => {
+		sequences.reduce((p, seq, i, arr) => {			
+			return p.then(() => generateFlick(seq));
+		}, Promise.resolve())
+		.then(resolve);
+	})	
+}
+
+// generate flick for each sequence
+
 function generateFlick (seq) {
 	return new Promise((resolve, reject) => {
 		console.log(seq);
@@ -25,12 +40,14 @@ function generateFlick (seq) {
 		.then(imageNames => imageNames.sort()) // sort them alpabetically
 		.then(sortedImageNames => sortedImageNames.map(s => imglib(`sequences/${seq}/` + s))) // get an array of image objects from the filenames
 		.then(images => createSprite(images, seq)) // create the sprite
-		.then(global.gc) // free up resources for subsequent sprites
-		.catch(e => console.log('garbage collector unsuccessfully exposed'))
+		.catch(e => console.log('Error creating sprite. Are the folders empty?'))
+		.then(global.gc) // free up resources for subsequent sprites		
 		.then(resolve) // then resolve the promise
-		.catch(e => resolve()) // otherwise reject with caught error
+		.catch(e => console.log('Garbage Collector failed to expose: %s', e))
 	})	
 }
+
+// get the filenames of the individual frames
 
 function getFilenames(seq) {
 	return new Promise((resolve, reject) => {
@@ -40,6 +57,8 @@ function getFilenames(seq) {
 		})
 	})
 }
+
+// create sprites for each sequence
 
 function createSprite(images, seq) {
 	let w = images[0].width(), // get the unit width of each image
@@ -84,6 +103,8 @@ function createSprite(images, seq) {
 	})
 }
 
+// save the JSON coordinate map
+
 function saveMap() {
 	return new Promise((resolve, reject) => {
 		fs.writeFile('flicker/flicker_map.json', JSON.stringify(map, null), err => { // write the flick to a file
@@ -93,6 +114,8 @@ function saveMap() {
 		})
 	})
 }
+
+// save a list of the images in HTML format
 
 function saveImgHTML() {
 	return new Promise((resolve, reject) => {
@@ -105,21 +128,12 @@ function saveImgHTML() {
 	})
 }
 
-// generate all sequences
+// initialise the process
 
-function generateAll (sequences) {
-	return new Promise((resolve, reject) => {
-		sequences.reduce((p, seq, i, arr) => {			
-			return p.then(() => generateFlick(seq));
-		}, Promise.resolve())
-		.then(resolve);
-	})	
-}
-
-// start the process
-
-getSequences('sequences/') // get every sequence
-.then(sequences => new Promise(resolve => generateAll(sequences).then(resolve))) // generate the flick with each sequence
-.then(saveMap) // save the coordinate map
-.then(saveImgHTML) // save the img HTML template
-.catch(e => console.log(e)) // log any errors if they occur
+(function init(){
+	getSequences('sequences/') // get every sequence
+	.then(sequences => new Promise(resolve => generateAll(sequences).then(resolve))) // generate the flick with each sequence
+	.then(saveMap) // save the coordinate map
+	.then(saveImgHTML) // save the img HTML template
+	.catch(e => console.log(e)) // log any errors if they occur
+})();
