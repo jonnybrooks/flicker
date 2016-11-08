@@ -3,7 +3,7 @@
   "version": "1.1.5",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node --expose-gc app.js",
     "publish:fix": "npm version patch -m \"~ Publishing fix (patch). Bumping to %s\" && git push && npm publish",
     "publish:feature": "npm version minor -m \"~ Publishing feature (minor). Bumping to %s\" && git push && npm publish",
     "publish:breaking": "npm version major -m \"~ Publishing breaking (major). Bumping to %s\" && git push && npm publish"
